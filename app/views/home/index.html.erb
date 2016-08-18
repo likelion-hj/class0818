@@ -1,4 +1,21 @@
-<div class="container" style ="margin-top: 3em">
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand"href="/home/index">멋사 CRUD</a>
+    
+    <% if user_signed_in? %>
+        <p><%= current_user.email %>님, 안녕하세요!</p>
+        <a href="/users/sign_out">
+        <button type="button" class="bin ban-default navbar-btn" style="float: right">Sign Out</button>
+        </a>
+    <% else %>
+        <a href="/users/sign_in">
+        <button type="button" class="bin ban-default navbar-btn" style="float: right">Sign In</button>
+        </a>
+        <% end %>
+  </div>
+</nav>
+
+<div class="container" style ="margin-top: 5em">
     <div class="rows">
     
     <form action="/home/write" method="POST">
@@ -16,8 +33,12 @@
     <% @every_post.each do |p| %>
         <div class="well" style="margin-top: 3em">
             <span style="font-weight: bold; font-size: 20px">#<%= p.id %></span><div style="float: right;"><%= p.created_at.in_time_zone("Asia/Seoul").strftime("%Y년%m월%d일 %H시%M분%S초") %> 
-            <a href='/update/<%= p.id %>'>수정</a> <a href='/destroy/<%= p.id %>'>삭제</a></div>
+            <% if current_user.nil? %>
+            <% elsif (current_user.id == p.user_id) || (current_user.has_role? :admin) %>
+              <a href='/update/<%= p.id %>'>수정</a> <a href='/destroy/<%= p.id %>'>삭제</a>
+            <% end %></div>
             <h3 style="font-weight: bold"><%= p.title %></h3>
+            <br><h3><%= p.user.email %></h3>
             <p><%= p.content %></p>
         </div>
     <% end %>

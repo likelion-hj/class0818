@@ -7,7 +7,8 @@ class HomeController < ApplicationController
   end
   
   def write
-    post = Post.new(title: params[:title], content: params[:content])
+    post = Post.new(title: params[:title], content: params[:content], user: current_user)
+    authorize! :write, Post #로그인 사람만 글을 쓸 수 있게 하는 코드
     post.save
     
     redirect_to "/home/index"
@@ -17,10 +18,12 @@ class HomeController < ApplicationController
 
   def update
     @one_post = Post.find(params[:id])
+    authorize! :update, @one_post
   end
   
   def destroy
     @one_post = Post.find(params[:id])
+    authorize! :destroy, @one_post
     @one_post.destroy
     redirect_to '/home/index'
 
